@@ -14,7 +14,7 @@ class NumberTitleCard extends StatelessWidget {
 
   final double screenWidth;
   final String cardTitle;
-  final String cardUrl;
+  final List<String> cardUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +30,9 @@ class NumberTitleCard extends StatelessWidget {
             child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: List.generate(
-                    10,
+                    cardUrl.length,
                     (index) => NumberCard(
-                          imageUrl: cardUrl,
+                          imageUrl: cardUrl[index],
                           index: index,
                         ))),
           ),

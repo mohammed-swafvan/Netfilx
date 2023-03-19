@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix/application/Home/home_bloc.dart';
 import 'package:netflix/core/color/colors.dart';
 import 'package:netflix/core/constance/constace.dart';
+import 'package:netflix/core/strings.dart';
 import 'package:netflix/presentation/home/widgets/background_card.dart';
 import 'package:netflix/presentation/home/widgets/number_title.dart';
 import 'package:netflix/presentation/widgets/main_title_cart.dart';
-
-const String imageUrlOne = "https://www.themoviedb.org/t/p/w440_and_h660_face/d9nBoowhjiiYc4FBNtQkPY7c11H.jpg";
-const String imageUrlTwo = "https://www.themoviedb.org/t/p/w440_and_h660_face/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg";
-const String imageUrlThree = "https://www.themoviedb.org/t/p/w440_and_h660_face/8QVbWBv94BAT9u1q9uJccwOxMzt.jpg";
-const String imageUrlFour = "https://www.themoviedb.org/t/p/w440_and_h660_face/kuf6dutpsT0vSVehic3EZIqkOBt.jpg";
-const String imageUrlFive = "https://www.themoviedb.org/t/p/w440_and_h660_face/5C9rerMqV1X0jnRdbbsM1BswVI2.jpg";
-const String imageUrlSix = "https://www.themoviedb.org/t/p/w440_and_h660_face/uMMIeMVk1TCG3CZilpxbzFh0JKT.jpg";
 
 ValueNotifier<bool> scrollingNotifier = ValueNotifier(true);
 
@@ -38,21 +34,83 @@ class ScreenHome extends StatelessWidget {
             },
             child: Stack(
               children: [
-                ListView(
-                  children: [
-                    const BackgroundCard(),
-                    kHeight,
-                    const MainTitleCard(cardTitle: "Released in the Past Year", imageUrl: imageUrlOne),
-                    const MainTitleCard(cardTitle: "Trending Now", imageUrl: imageUrlTwo),
-                    NumberTitleCard(
-                      screenWidth: screenWidth,
-                      cardTitle: "Top 10 TV Shows in India Today",
-                      cardUrl: imageUrlOne,
-                    ),
-                    const MainTitleCard(cardTitle: "International TV Dramas", imageUrl: imageUrlThree),
-                    const MainTitleCard(cardTitle: "New Releases", imageUrl: imageUrlFour),
-                    const MainTitleCard(cardTitle: "Tense Dramas", imageUrl: imageUrlFive)
-                  ],
+                BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) {
+                    if (state.isLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state.hasError) {
+                      return Center(
+                        child: Icon(
+                          Icons.wifi_off,
+                          color: kWhiteColor.withOpacity(0.5),
+                          size: 40,
+                        ),
+                      );
+                    }
+
+                    //released passed year
+                    final releasedPasedYear = state.pastYearMovieList.map((mov) {
+                      return '$imageAppentUrl${mov.posterPath}';
+                    }).toList();
+
+                    //released passed year
+                    final trendingNow = state.trendingNowList.map((mov) {
+                      return '$imageAppentUrl${mov.posterPath}';
+                    }).toList();
+                    trendingNow.shuffle();
+
+                    //top 10
+                    final topTen = state.trendingTvList.map((mov) {
+                      return '$imageAppentUrl${mov.posterPath}';
+                    }).toList();
+
+                    // tense dramas
+                    final tenseDramas = state.tenseDaramasList.map((mov) {
+                      return '$imageAppentUrl${mov.posterPath}';
+                    }).toList();
+                    tenseDramas.shuffle();
+
+                    // south indian
+                    final southIndian = state.southIndianList.map((mov) {
+                      return '$imageAppentUrl${mov.posterPath}';
+                    }).toList();
+                    southIndian.shuffle();
+
+                    return RefreshIndicator(
+                      onRefresh: () async{
+                        BlocProvider.of<HomeBloc>(context).add(const GetHomeScreendata());
+                      },
+                      child: ListView(
+                        children: [
+                          const BackgroundCard(),
+                          kHeight,
+                          MainTitleCard(
+                            cardTitle: "Released in the Past Year",
+                            posterList: releasedPasedYear.sublist(0, 10),
+                          ),
+                          MainTitleCard(
+                            cardTitle: "Trending Now",
+                            posterList: trendingNow.sublist(0, 10),
+                          ),
+                          NumberTitleCard(
+                            screenWidth: screenWidth,
+                            cardTitle: "Top 10 TV Shows in India Today",
+                            cardUrl: topTen.sublist(0, 10),
+                          ),
+                          MainTitleCard(
+                            cardTitle: "International TV Dramas",
+                            posterList: tenseDramas.sublist(0, 10),
+                          ),
+                          MainTitleCard(
+                            cardTitle: "Hollywood Movie",
+                            posterList: southIndian.sublist(0, 10),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
                 Container(),
                 scrollingNotifier.value

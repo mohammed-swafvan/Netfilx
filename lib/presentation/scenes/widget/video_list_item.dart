@@ -1,5 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix/application/scenes/scenes_bloc.dart';
 import 'package:netflix/core/color/colors.dart';
+import 'package:netflix/core/strings.dart';
+import 'package:netflix/domain/downloads/models/downloads.dart';
+import 'package:video_player/video_player.dart';
+import 'package:share_plus/share_plus.dart';
+
+class VideoListItemInherited extends InheritedWidget {
+  final Widget widget;
+  final Downloads movieData;
+  const VideoListItemInherited({
+    super.key,
+    required this.widget,
+    required this.movieData,
+  }) : super(child: widget);
+
+  @override
+  bool updateShouldNotify(covariant VideoListItemInherited oldWidget) {
+    return oldWidget.movieData != movieData;
+  }
+
+  static VideoListItemInherited? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<VideoListItemInherited>();
+  }
+}
 
 class VideoListItem extends StatelessWidget {
   const VideoListItem({super.key, required this.index});
@@ -7,10 +32,14 @@ class VideoListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final backDropPath =
+        VideoListItemInherited.of(context)?.movieData.backDropPath;
+    final videoUrl = dummyVideoUrls[index % dummyVideoUrls.length];
     return Stack(
       children: [
-        Container(
-          color: Colors.accents[index],
+        ScenesVideos(
+          videoUrl: videoUrl,
+          onStateChanged: (bool) {},
         ),
         Align(
           alignment: Alignment.bottomCenter,
@@ -36,16 +65,60 @@ class VideoListItem extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
+                    children: [
                       CircleAvatar(
-                        radius: 27,
-                        backgroundImage:
-                            NetworkImage("https://www.themoviedb.org/t/p/w1066_and_h600_bestv2/wdwcOBMkt3zmPQuEMxB3FUtMio2.jpg"),
+                          radius: 27,
+                          backgroundImage: backDropPath == null
+                              ? null
+                              : NetworkImage('$imageAppentUrl$backDropPath')),
+                      ValueListenableBuilder(
+                        valueListenable: likedVideosIdNotifier,
+                        builder: (BuildContext ctx, Set<int> newLikedListIds,
+                            Widget? _) {
+                          final currentIndex = index;
+                          if (newLikedListIds.contains(currentIndex)) {
+                            return GestureDetector(
+                              onTap: () {
+                                likedVideosIdNotifier.value
+                                    .remove(currentIndex);
+                                likedVideosIdNotifier.notifyListeners();
+                              },
+                              child: const VideoActions(
+                                icon: Icons.favorite_border_outlined,
+                                iconText: "Liked",
+                              ),
+                            );
+                          } else {
+                            return GestureDetector(
+                              onTap: () {
+                                likedVideosIdNotifier.value.add(currentIndex);
+                                likedVideosIdNotifier.notifyListeners();
+                              },
+                              child: const VideoActions(
+                                icon: Icons.emoji_emotions,
+                                iconText: "LOL",
+                              ),
+                            );
+                          }
+                        },
                       ),
-                      VideoActions(icon: Icons.emoji_emotions, iconText: "LOL"),
-                      VideoActions(icon: Icons.add, iconText: "My List"),
-                      VideoActions(icon: Icons.near_me_outlined, iconText: "Share"),
-                      VideoActions(icon: Icons.play_arrow_rounded, iconText: "Play"),
+                      const VideoActions(icon: Icons.add, iconText: "My List"),
+                      GestureDetector(
+                        onTap: () {
+                          final movieName = VideoListItemInherited.of(context)
+                              ?.movieData
+                              .posterPath;
+                          if (movieName != null) {
+                            Share.share(movieName);
+                          }
+                        },
+                        child: const VideoActions(
+                          icon: Icons.near_me_outlined,
+                          iconText: "Share",
+                        ),
+                      ),
+                      const VideoActions(
+                          icon: Icons.play_arrow_rounded, iconText: "Play"),
                     ],
                   ),
                 )
@@ -82,5 +155,52 @@ class VideoActions extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class ScenesVideos extends StatefulWidget {
+  final String videoUrl;
+  final void Function(bool isPlaying) onStateChanged;
+  const ScenesVideos(
+      {super.key, required this.videoUrl, required this.onStateChanged});
+
+  @override
+  State<ScenesVideos> createState() => _ScenesVideosState();
+}
+
+class _ScenesVideosState extends State<ScenesVideos> {
+  late VideoPlayerController videoPlayeController;
+
+  @override
+  void initState() {
+    videoPlayeController = VideoPlayerController.network(widget.videoUrl);
+    videoPlayeController.initialize().then((value) {
+      setState(() {
+        videoPlayeController.play();
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: videoPlayeController.value.isInitialized
+          ? AspectRatio(
+              aspectRatio: videoPlayeController.value.aspectRatio,
+              child: VideoPlayer(videoPlayeController),
+            )
+          : const Center(
+              child: CircularProgressIndicator(),
+            ),
+    );
+  }
+
+  @override
+  void dispose() {
+    videoPlayeController.dispose();
+    super.dispose();
   }
 }

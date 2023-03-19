@@ -14,7 +14,8 @@ class MainCard extends StatelessWidget {
       height: screenWidth * 0.35,
       width: screenWidth * 0.27,
       decoration: BoxDecoration(
-        image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
+        image:
+            DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
         borderRadius: kBorderRadius10,
       ),
     );

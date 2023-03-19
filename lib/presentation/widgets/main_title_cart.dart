@@ -4,10 +4,10 @@ import 'main_card.dart';
 import 'main_title.dart';
 
 class MainTitleCard extends StatelessWidget {
-  const MainTitleCard({super.key, required this.cardTitle, required this.imageUrl});
+  const MainTitleCard({super.key, required this.cardTitle, required this.posterList});
 
   final String cardTitle;
-  final String imageUrl;
+  final List<String> posterList;
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +17,17 @@ class MainTitleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           MainTitle(title: cardTitle),
+          MainTitle(title: cardTitle),
           kHeight,
           LimitedBox(
             maxHeight: screenWidth * 0.37,
             child: ListView(
-                scrollDirection: Axis.horizontal, children: List.generate(10, (index) => MainCard(imageUrl: imageUrl))),
+              scrollDirection: Axis.horizontal,
+              children: List.generate(
+                posterList.length,
+                (index) => MainCard(imageUrl: posterList[index]),
+              ),
+            ),
           ),
           kHeightTwenty,
         ],

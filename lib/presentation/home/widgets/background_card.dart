@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix/core/strings.dart';
+import '../../../application/downloads/downloads_bloc.dart';
 import '../../../core/color/colors.dart';
 import 'custom_Button.dart';
-const String homeImage = "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/5cWXJJsPRuz85zAK7XXmu9Vfdu2.jpg";
 
 class BackgroundCard extends StatelessWidget {
   const BackgroundCard({super.key});
@@ -12,14 +14,23 @@ class BackgroundCard extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     return Stack(
       children: [
-        Container(
-          height: screenHeight * 0.63,
-          width: screenWidth,
-          decoration:  const BoxDecoration(
-              image: DecorationImage(
-            image: NetworkImage(homeImage),
-            fit: BoxFit.cover,
-          )),
+        BlocBuilder<DownloadsBloc, DownloadsState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Container(
+              height: screenHeight * 0.7,
+              width: screenWidth,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                image: NetworkImage('$imageAppentUrl${state.downloads[0].posterPath}'),
+                fit: BoxFit.cover,
+              )),
+            );
+          },
         ),
         Positioned(
           bottom: 5,
@@ -79,4 +90,3 @@ class PlayButton extends StatelessWidget {
     );
   }
 }
-

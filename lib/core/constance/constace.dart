@@ -12,8 +12,10 @@ final BorderRadius kBorderRadius10 = BorderRadius.circular(10);
 final BorderRadius kBorderRadius30 = BorderRadius.circular(30);
 
 //TextStyle
-TextStyle kHomeTitleStyle = const TextStyle(fontWeight: FontWeight.w600, fontSize: 16);
-TextStyle kTapBarTitle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+TextStyle kHomeTitleStyle =
+    const TextStyle(fontWeight: FontWeight.w600, fontSize: 16);
+TextStyle kTapBarTitle =
+    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
 TextStyle kNumberFontFamily = GoogleFonts.robotoMono();
 
 //ThemeData

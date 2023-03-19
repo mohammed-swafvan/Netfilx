@@ -23,10 +23,14 @@ class BottomNavWidgets extends StatelessWidget {
             unselectedIconTheme: const IconThemeData(color: Colors.grey),
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.collections), label: 'New & Hot'),
-              BottomNavigationBarItem(icon: Icon(Icons.emoji_emotions), label: 'Scenes'),
-              BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-              BottomNavigationBarItem(icon: Icon(Icons.download), label: 'Downloads'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.collections), label: 'New & Hot'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.emoji_emotions), label: 'Scenes'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.search), label: 'Search'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.download), label: 'Downloads'),
             ]);
       },
     );

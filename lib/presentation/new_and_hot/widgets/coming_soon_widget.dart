@@ -3,13 +3,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:netflix/core/color/colors.dart';
 import 'package:netflix/core/constance/constace.dart';
 
-const String imageUrlComingSoon = "https://www.themoviedb.org/t/p/w1066_and_h600_bestv2/22z44LPkMyf5nyyXvv8qQLsbom.jpg";
-
 class ComingSoonWidget extends StatelessWidget {
+  final String id;
+  final String month;
+  final String day;
+  final String backDropPath;
+  final String movieName;
+  final String overview;
+
   const ComingSoonWidget({
     super.key,
     required this.screenWidth,
     required this.screenHeight,
+    required this.id,
+    required this.month,
+    required this.day,
+    required this.backDropPath,
+    required this.movieName,
+    required this.overview,
   });
 
   final double screenWidth;
@@ -21,11 +32,11 @@ class ComingSoonWidget extends StatelessWidget {
       children: [
         SizedBox(
           width: screenWidth * 0.15,
-          height: screenHeight * 0.42,
+          height: screenHeight * 0.47,
           child: Column(
             children: [
               Text(
-                "APR",
+                month,
                 style: TextStyle(
                   color: kWhiteColor.withOpacity(0.6),
                   fontWeight: FontWeight.bold,
@@ -33,7 +44,7 @@ class ComingSoonWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                "01",
+                day,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontFamily: kNumberFontFamily.fontFamily,
@@ -44,8 +55,8 @@ class ComingSoonWidget extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: screenWidth * 0.8,
-          height: screenHeight * 0.42,
+          width: screenWidth * 0.78,
+          height: screenHeight * 0.47,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -55,8 +66,8 @@ class ComingSoonWidget extends StatelessWidget {
                     width: double.infinity,
                     height: screenHeight * 0.22,
                     decoration: BoxDecoration(
-                      image: const DecorationImage(
-                        image: NetworkImage(imageUrlComingSoon),
+                      image: DecorationImage(
+                        image: NetworkImage(backDropPath),
                         fit: BoxFit.cover,
                       ),
                       borderRadius: kBorderRadius10,
@@ -83,13 +94,17 @@ class ComingSoonWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text(
-                    "AMIGOS",
-                    style: TextStyle(
-                      color: kWhiteColor.withOpacity(0.6),
-                      fontWeight: FontWeight.w900,
-                      fontSize: 25,
-                      fontFamily: GoogleFonts.aclonica().fontFamily,
+                  Expanded(
+                    child: Text(
+                      movieName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: kWhiteColor.withOpacity(0.6),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20,
+                        fontFamily: GoogleFonts.aclonica().fontFamily,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -110,13 +125,17 @@ class ComingSoonWidget extends StatelessWidget {
               ),
               kHeight,
               Text(
-                "Coming on 1 April",
+                "Coming on $day $month",
                 style: kHomeTitleStyle,
               ),
               kHeight,
-              Text(
-                "When a man discovers his two doppelgangers online, he finds new connections in life and love --but danger lurks when a hidden criminal past emerges.",
-                style: TextStyle(color: kWhiteColor.withOpacity(0.4)),
+              Expanded(
+                child: Text(
+                  overview,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: kWhiteColor.withOpacity(0.4)),
+                ),
               ),
             ],
           ),
